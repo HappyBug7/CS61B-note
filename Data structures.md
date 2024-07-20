@@ -40,4 +40,6 @@
 	- Expression also have a type
 	- The compiler checks that all the types in your program are compatible before the program ever runs
 
+## Lecture 2
+*basic java class tutorial*
 
