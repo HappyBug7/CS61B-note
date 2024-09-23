@@ -260,7 +260,7 @@ But? what if we create a empty list and then add last?
 CRASH!
 `first` is null, i.e. there's no Object `first` pointing, then we cannot call `first.next`!
 
-**Solution**! Have sentinel node (*dommy head*)!
+**Solution**! Have sentinel node (*dummy head*)!
 ```
 private IntNode sentinel;
 
@@ -273,4 +273,39 @@ public SLList() {
 	sentinal = new IntNode(0, null);
 	size = 0;
 }
+```
+
+# Lecture 5
+*fix our SLList*
+`addLast()` is pretty slower than `addFirst()`, how can we make `addLast()` faster?
+**answer**: Doubly linked list
+```
+public class IntNode {
+	public int item;
+	public IntNode next;
+	public IntNode prev;
+
+	public IntNode(int i, IntNode n) {
+		item = i;
+		next = n;
+	}
+}
+```
+Since we have sentinal node at the begining of the list, which helps us to simplify the case
+Then in DLList, we could have two sentinal nodes, `sentFront`, `sentBack`
+**BUT!**
+we could have **only one** sentinal node, whose's `next` is the first node of the list, `prev` is the last node of the list (**Pretty neat!** **DEEP BEAUTIFUL!**) circular list.
+
+## Arrays
+*also try java visualizer*
+```
+x = new int[3];
+// creates array conatining 3 int boxes (32*3=96 bits in total)
+```
+Array are not premitive types, which means the variables are reference to the object;
+weird function`System.arraycopy(to, start_idx, from, start_idx, copy_count)`
+Arrays can be computed at runtime
+```
+int index = askUser();
+System.out.println(arr[index]) // totaly fine
 ```
