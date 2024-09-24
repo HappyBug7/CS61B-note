@@ -309,3 +309,50 @@ Arrays can be computed at runtime
 int index = askUser();
 System.out.println(arr[index]) // totaly fine
 ```
+
+# Lecture 6
+*testing and debugging*
+Write a method: giving some points, find the shortest way between two points
+Formalization:
+- find **input** and **output**
+- **input:** an array of **2D** intiger points
+- **output:** double
+- **exception:** if there are 0/1 point, return 0;
+- **example input:**
+	- $(0,0), (7,7), (13,37), (10,11)$
+	- `public double Distance(point p1, point p2)`
+How to write a test?
+```
+public class TestClosest() {
+	public static void testClosest() {
+		Point[] input = {
+			new Point(0,0);
+			new Point(3,4);
+			new Point(8,2);
+		};
+		double expected = 5.0;
+		double actual = Closest.findclosest(input);
+		
+		if (!expected.equals(actural)) {
+			System.out.println("Incorrect resultL expected: '" + expected + "', but got '" + actural + "'");
+		}
+		return;
+	}
+}
+```
+this is called **unit test**
+
+- Unit test
+	- test desighed to catch bugs
+	- small input size so you can run the test manually
+- Comprehensive Test
+- Edge Case Tests
+- Integration Tests
+
+**Develop Philosophy**
+- ADD (**A**utograder **D**riven **D**evelopment)
+	- slow, unsafe
+	- NOT EFFICIENT!
+- TDD (**T**est **D**riven **D**evelopment)
+	- fast feedback
+	- design a easy way to get feedback before you start executing
