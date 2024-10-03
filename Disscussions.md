@@ -258,3 +258,64 @@ public class Main {
     }
 }
 ```
+
+# Discussion 4
+## 1 It's a Bird! It's a Plane! It's a CatBus!
+(a)
+```
+interface Vechile {
+	public void revEngine();
+}
+
+interface Honker {
+	public void honk();
+}
+
+public class CatBus implements Vechile, Honker {
+	@Override
+	public void revEngine() { /*hidden*/ }
+
+	@Override
+	public void honk() { /*hidden*/ }
+
+	/** Allows CatBus to honk at other CatBuses. */
+	public void conversation(CatBus target) {
+		honk();
+		target.honk();
+	}
+}
+```
+
+(b)  
+```
+public void conversation(Honker target) {
+	honk();
+	target.honk();
+}
+```
+
+(c)
+```
+Honker cb = new CatBus();
+Honker hcg = new CanadaGoose();
+```
+
+## Raining Cats and Dogs
+(a)
+
+| line | Compile Time                                            | Runtime                                   | Output                                 |
+| ---- | ------------------------------------------------------- | ----------------------------------------- | -------------------------------------- |
+| 8    | not compile - Animal is not necessarily a Cat           | N/A                                       | compile error                          |
+| 9    | Animal's greet(Animal)                                  | Dog's greet(Cat)                          | "Dog Pluto says: woof!"                |
+| 10   | Animal's sleep()                                        | N/A - sleep is static!                    | "Naptime!"                             |
+| 11   | Cat's play(String)                                      | Cat's play(string)                        | "woo it is so much fun being a cat :D" |
+| 12   | Cat's greet(Dog)                                        | Cat's greet(Dog)                          | "Cat Garfield says: Meow!"             |
+| 13   | Animal's greet(Dog)                                     | Animal's greet(Dog)                       | "Hi Lucky, I'm Garfield"               |
+| 14   | Dog's sleep()                                           | N/A - sleep is static!                    | "Naptime!"                             |
+| 15   | works                                                   | works                                     | ok                                     |
+| 16   | Error: play(int) not defined                            | N/A                                       | compile error                          |
+| 17   | Animal's play()                                         | Error: an Animal is not necessarily a Cat | runtime error                          |
+| 18   | works                                                   | Error: a Cat is not a Dog                 | runtime error                          |
+| 19   | Error: c is static type Cat but a is static type Animal | N/A                                       | compile error                          |
+(b)
+cast

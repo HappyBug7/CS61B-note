@@ -356,3 +356,209 @@ this is called **unit test**
 - TDD (**T**est **D**riven **D**evelopment)
 	- fast feedback
 	- design a easy way to get feedback before you start executing
+
+# Lecture 7
+*build a list using array*
+use an array in the back instead of linked list
+**array resizing:**
+- create a slightly larger array, and copy the old array to the new array **OR?**
+- we can double the size of the array each time they are fulfiled.
+
+# Lecture 8
+*interface & implementation inheritance*
+if we want a function to have different argument, there are many ways to deal with it:
+- **overloading**, copy the same function and then change the argument and logic.
+	- code is visually identical
+	- won't work for future data type
+	- harder to maintain
+- **use hypermyn**
+	- define a hypermyn using **interface** keyword
+	- using **implememts** keyword to declear a hypomyn for an interface
+
+**Overloading vs. Overriding**
+If a "subclass" has a method with exact same signature as in the "superclass", we say the subsclass **overrides** the method
+
+methods with same method name but different arguments are **overloaded** methods
+
+Speciftying the capabilities of a subclass using the `implements` key
+
+If the "supclass" waht to set a default implementation for method, use `default` keyword.
+
+If you don't like the method you inherited, you can override it.
+
+# Lecture 9
+*Extends, Casting, Higher Order Functions*
+Lsat time: 
+**Interface inherience** `interface`keyword
+**Implementation inherience** `default`keyword
+
+new keyword `extends`, allows you to inherit from a class
+`SLList -> RotateSLList` by `public class RotateSLList<Item> extends SLList<Item>`
+
+keyword`super`, allows you to access the parent class's method
+when you call the child class's constructer, java will autometically call `super()`
+
+everything in java extends `Object`
+**dangerous**: `extends` should only be used for "**is-a**" relationship (SLList is a list)
+you shouldn't use `extends` for a "**has-a**" relationship (cats has paws)
+
+related idea: ***Module***
+hide implementation, show interfaces
+
+**Implementation Inheritance Breaks Encapsulation**
+
+cast `(Poodle) maxDog(d1, d2)`, a cast told the compiler to be less cautious
+
+# Lecture 10
+*more inheritance!*
+## Higher Order Function
+function that takes function as parameter
+*an idea in FP*
+```
+public class TenX {
+	public int apply(int x) {
+		return 10 * x;
+	}
+}
+
+public class HoFDemo {
+	public static int doTwice(TenX f, int x){
+		return f.apply(f.apply(x));
+	}
+
+	public static void main(String[] args) {
+		System.oyt.print(doTwice(new TenX(), 2))
+	}
+}
+```
+if we have other int unary function, we could create a `IntUnaryFunction` interface and implements it in different classes and pass the instances of `IntUnaryFunction` as paramter
+
+## Subtype Polymorphism
+*providing a single interface to entites of different types*
+
+**HoF apporach:**
+```
+def print_larger(x, y, compare, stringify):
+	if compare(x,y):
+		return stringify(x)
+	return stringify(y)
+```
+
+**subtype polymorphism apporach:**
+```
+def print_larger(x, y):
+	if x.largerThan(y):
+		return x.str()
+	return y.str()
+```
+
+implement `max()` for all array
+`public static OurComparable max(OurComparable x, OurComparable y)`
+
+```
+public interface OurComaprable {
+	public int compareTo(Object obj);
+}
+```
+
+*trick!*
+wirte:
+```
+rteurn size - otherDog.size;
+```
+rather than:
+```
+if (size > otherDog.size) {
+	return 1;
+} else if (size = otherDog.size) {
+	return 0;
+} else {
+	return -1;
+}
+```
+
+in java, we have `interface comparable<T>`
+
+## Comparators
+if we want to compare Objects by different factor, we could use **comparator**
+```
+public class NameComparator implements Compartor<Dog> {
+	public int compare(Dog d1, Dog d2) {
+		return d1.name.compareTo(d2.name);	
+	}
+}
+```
+
+```
+NameCompartor nc = new NameCompartor();
+if (nc.compare(d1, d2) < 0) {
+	d4.bark();
+} else {
+	d5.bark();
+}
+```
+
+# Lecture 11
+*array set*
+a set contains different items
+## Iteration
+```
+for (int i : aset) {
+	System.out.println(i);
+}
+```
+now we are going to make our aset support "enhanced for" loop
+actually the fancy for loop equals:
+```
+Interator<Integer> seer = javaset.iteratior();
+
+while (seer.hasNext()) {
+	int x = seer.next();
+	System.out.println(x);
+}
+```
+
+```
+private class ArraySetIterator implements Iterator<T> {
+	public int wizPos;
+
+	public ArraySetIterator() {
+		wizPos = 0;
+	}
+
+	public boolen hasNext() {
+		return wizPos < size;
+	}
+
+	public next() {
+		T returnItem = items[wizPos];
+		wizPos += 1;
+		return returnItem;
+	}
+}
+public Iterator<T> iterator() {
+	return new ArraySetIterator();
+}
+```
+if a list implements iterator, then it implements `Iterable`.
+
+# Lecture 13
+*Asymptotics*
+```
+for (int i = 0; i < A.length; i++) {
+	if (A[i] == A[i + 1]) {
+		return true;
+	}
+}
+return false;
+```
+
+| operation         | sym. count | count (N = 10000) |
+| ----------------- | ---------- | ----------------- |
+| `i = 0`           | 1          | 1                 |
+| less than (`<`)   | 1 to N     | 0 to 10000        |
+| increment (`+=1`) | 0 to N-1   | 0 to 9999         |
+| equals (`=`)      | 1 to N-1   | 1 to 9999         |
+| array access      | 2 to 2N-1  | 2 to 19998        |
+we only care the largest order term
+
