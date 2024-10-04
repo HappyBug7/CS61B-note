@@ -562,3 +562,71 @@ return false;
 | array access      | 2 to 2N-1  | 2 to 19998        |
 we only care the largest order term
 
+# Lecture 14
+*Disjoint Sets*
+The choice of data structure we use hugly effect how fast our code run.
+The Disjoint set data structure has two operations
+- `connect(x,y)`: connect `x` and `y`
+- `isConnected(x,y)`: Returns whether `x` and `y` are connected (connection can be transitive)
+
+we don't need to keep track of how they are connected. Instead, we can divide the nodes into different sets
+- `connect(x,y)`: 
+	```
+	if x is uninnitialized:
+		if y is uninnitialed:
+			assign x and y to a new set
+		else:
+			assin x to y's team
+	else:
+		same as previous
+	```
+
+- `isConnected(x,y)`
+```
+	return x.team == y.team
+```
+
+idea #1:
+- use `List<Set<Integer>>`
+- **NO!!!**
+- requires iterating trough all the set to find anything, **SLOW!**
+- constructor: $\Theta(N)$
+- `connect(x,y)`: $\Theta(N)$
+- `isConnected(x,y)`: $\Theta(N)$
+
+improvement: **quick find**
+use an array to keep track of all the items:
+```
+innitially: [0,1,2,...,N]
+connect i and j: 
+for (int k = 0; k < a.length; k++) {
+	if (a[k] == a[i]) {
+		a[k] = a[j]
+	} 
+}
+check if i and j are in the same team: a[i] == a[j]
+```
+- `connect`: $\Theta(N)$
+- `isConnected`: $\Theta(1)$
+
+improvement: **quick union**
+```
+innitial: [-1, -1, ..., -1]
+assign i to j's team: Find root(i), Find root(j), j's root = i's root
+isConnected: root(x) == root(y) (can use recursive implementation)
+```
+![[Pasted image 20241003215951.png]]
+- `connect(x,y)`: $O(N)$
+- `isConnect(x,y)`: $O(N)$
+
+improvement: weighted quick union
+*always chase the shortest height*
+![[Pasted image 20241003221203.png]]
+put the smaller tree under the larger tree
+- `connect(x,y)`: $O(\log(N))$
+- `isConnected(x,y)`: $O(\log(N))$
+
+**Even more good**:
+every time you call `isConnected`, tie the node to the root, which will flatten your tree!
+
+
