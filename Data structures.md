@@ -629,4 +629,209 @@ put the smaller tree under the larger tree
 **Even more good**:
 every time you call `isConnected`, tie the node to the root, which will flatten your tree!
 
+# Lecture 15
+*Asymptotics II*
+```
+int N = A.length;
+for (int i = 0; i < N; i++) {
+	for (int j = 0; j < N; j++) {
+		if (a[i] == a[j]) {
+			return true
+		}
+	}
+}
+```
 
+```
+for (int i = 0; i < N; i++) {
+	for (int j = 0; j < i; j++) {
+		// 1 unit of work
+	}
+}
+```
+
+```
+for (int i = 0; i < N; i++) {
+	// N - i - 1 unit of work
+}
+```
+$\sum\limits_{0}^{N - 1} = \frac{N(N-1)}{2}$
+
+```
+for (int i = 1; i < N; i = i * 2) {
+	for (int j = 0; j < i; j++) {
+		// 1 unit of work
+	}
+}
+```
+
+| N    | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | ... |
+| ---- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C(N) | 1   | 3   | 3   | 7   | 7   | 7   | 7   | 15  | ... |
+$C(N) = 1+2+...+N = 2N-1$, if $N$ is the power of 2
+best case: $N$ is the power of 2, $C(N) = 2N-1$
+worst case: $N+1$ is the power of 2, $C(N) = 2(\frac{N+1}{2})-1 = N$
+$C(N)\in [N,2N-1]$
+therefore $C(N) = \Theta(N)$
+
+```
+for (int i = 0; i < N; i++) {
+	if (i is the power of 2) {
+		resize();
+	}
+	addLast();
+}
+```
+with total runtime be $\Theta(N)$
+
+**recursion**
+```
+public static int func() {
+	if (n <= 1) {
+		return 1;
+	}
+	return func(n-1) + func(n-1);
+}
+```
+$C(N) = 1 + 2 + 4 + ... + 2^{N-1} = 2^{N} - 1$
+$R(N) = \Theta(2^{N})$
+
+**merge sort**
+*use recursive ways to sort*
+merge two arrays $\Theta(N)$
+```
+static void sortTime(int n) {
+	sortedTime(n/2);
+	sortedTime(n/2);
+	// n units of work
+}
+```
+$C(N) = \begin{cases} 1  \quad\quad\quad\quad\quad\quad\quad N < 2 \\ 2C(N/2)+N \quad N \ge 2 \end{cases}$
+$R(N) = \Theta(N\log N)$
+
+# Lecture 16
+*abstract data type*
+An Abstract Data Type (**ADT**) is defined only by its operations, not by its implementations
+
+```
+List<Integer> L = new ArrayList<>();
+```
+the built-in `java.util` package provides a number of useful:
+- Interfaces
+- Implementations
+
+**Binary search tree**
+same as binary search, we could break the list at the middle, and the middle node's left is the center node of the left list, right the same
+
+A tree consists of :
+- A set of nodes
+- A set of edges that connect those nodes
+	- There's exactly one path between two nodes
+a node is also a tree
+
+parent: the first node on the path to `root` (formal)
+
+**BST property:** For every node X in the tree:
+- Every key in the left subtree is **less** than X's key
+- Every key in the right subtree is **greater** than X's key
+**no duplicate key!!!**
+
+```
+static BST find(BST T, Key sk) {
+	if (T == null) {
+		return null;
+	}
+	if (sk.equals(T.key)) {
+		return T;
+	} else if (sk < T.key) {
+		return find(T.left, sk);
+	} else {
+		return find(T.right, sk);
+	}
+}
+```
+
+how to insert?
+```
+static BST insert(BST T, Key ik) {
+	if (T == null) {
+		return new BST(ik);
+	}
+	if (ik < T.key) {
+		T.left = insert(T.left, ik);
+	} else if (ik > T.key) {
+		T.right = insert(T.right, ik);
+	}
+	return T;
+}
+```
+???
+
+how to delete?
+break down to cases
+- node has no children
+- node has one children
+- node has two children
+
+Choose the predecessor or successor
+![[Pasted image 20241008232947.png]]
+
+# Lecture 17
+*B-trees*
+worst case BSTs' height are $\Theta(N)$
+
+**depth**
+the steps take from `root` to `node`
+**height**
+the depth of the deepest leaf
+
+**B-trees**
+ideas
+- Never add new leaves at the bottom![[Pasted image 20241011173721.png]]
+- set a limit `L` to the number of items an leaf could have
+- once a node has more than L items, givr an item to parent![[Pasted image 20241011174401.png]]
+the only way that B-tree can grow is by dividing roots, which ensures the nodes beneath almost full
+
+B-trees ensures:
+- all leaves has the same depth
+- if a node has more than one element, it must have `L+1` childs
+- height grows with $\Theta(log_{L}(N))$
+
+**special case:**
+- `L = 2`, we call "2-3 trees"
+- `L = 3`, we call "2-3-4 trees"
+
+# Lecture 18
+*Red Black Trees*
+
+**Tree Rotation**
+`rotateLeft(G)`: let x be the right child of G. Make G the new left child of x.
+![[Pasted image 20241012142113.png]]
+![[Pasted image 20241012142129.png]]
+![[Pasted image 20241012142202.png]]
+![[Pasted image 20241012142211.png]]
+reverse operation: `rotateRight(G)`
+
+by a sequence of rotation, we can transfrom the shape of a BST.
+
+**Left Leaning Red Black Tree(LLRBs)**
+keep two trees, one 2-3 Tree, and one BST
+![[Pasted image 20241012144701.png]]
+- LLRBs are normal BSTs
+- There's a 1-1 correspndence between an LLRB and an equivalent 2-3 tree
+- The red is just a convenient fiction. Red links dont 'do' anything special
+
+an LLRB has no more than $2x$ the height of its 2-3 tree
+
+Where do LLRBs come from?
+- insert as usual into a BST
+- then use zero or more rotations to maintain the 1-1 relationship
+![[Pasted image 20241012151027.png]]
+- for node without child
+	- add left: use red link
+	- add right: use red link then `rotateLeft(Node)`
+- for node with left child
+	- add left: `rotateRight(parentNode)`
+	- add right
+In general,  **add** then **rotate**
+![[Pasted image 20241012151714.png]]
