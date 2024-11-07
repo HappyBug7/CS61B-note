@@ -360,7 +360,7 @@ this is called **unit test**
 # Lecture 7
 *build a list using array*
 use an array in the back instead of linked list
-**array resizing:**
+**array resizing:** ^778dec
 - create a slightly larger array, and copy the old array to the new array **OR?**
 - we can double the size of the array each time they are fulfiled.
 
@@ -835,3 +835,366 @@ Where do LLRBs come from?
 	- add right
 In general,  **add** then **rotate**
 ![[Pasted image 20241012151714.png]]
+
+# lecture 19
+*Hash Tables*
+our search tree require items to be comparable
+
+BobaCounter set
+put item with same tail together
+use linked list can prevent space weast
+
+let $N$ be the number of items, $M$ be the number of sets, then `contains(item)` runs in $\Theta(N/M)$ time
+
+suppose we set a rule that when $N/M$ is $\ge 1.5$, we double $M$ (just like what we do when building arraylist)
+![[Pasted image 20241013155139.png]]
+this operation makes the size of set around $N$, which made `add(item)` and `contains(item)` takes constant time.
+
+our set works pertty good for integers, but we want to store all type of items
+example: String -> Integer
+- Base 26: $cat_{26} = (3 \times 26^{2})+(1\times 26^{1})+(20\times 26^{0}) = 2074_{10}$
+- Hash code
+some item's hashcode is negative, how can we compute negative numbers mod integers?
+-1 mod 4 = 3 mod 4 = 3 (remenber to use `Math.floorMod()`)
+
+# Lecture 20
+*Hashing II*
+what's the default hashcode mathod for objects?
+return their address
+we want our hash function can spread our items evenly
+
+since the default hashcode method is a good spread, then why should we have customized function?
+
+another case where hash table may crash:
+mutable object
+
+# Lecture 21
+*PQ & Heaps*
+```
+public interface MinPQ<Item> {
+	public void add(Item x);
+
+	public Item getSmallest();
+
+	public Item removeSmallist();
+
+	public int size();
+}
+```
+Usful cases:
+- capture the largest/smallest $M$ items
+
+Binary min-heap: Binary tree that is complete and obeys ***min-heap property***
+- every node is less than or equal to both of its children
+- complete: all nodes are as left as possible and no missing items at front `height - 1` levels
+
+`getSmallest()`: return root *constant time*
+
+`insert()`: 
+- add to the end of the heap
+- swim up the hierarchy to rightful place.
+$\log(n)$ time
+
+`removeSmallest()`: 
+- delete root
+- put the last item to the root
+- sink down to its rightful place
+$\log(n)$ time
+
+**implementation**
+- Tree impletation
+- Array impletation
+`node.leftChild = 2 * i + 1`
+`node.rightChild = 2 * i + 2`
+`node.parent = (i - 1) // 2`
+
+# Lecture 22
+*graphs and traversal*
+
+***traversal passed***
+
+A graph consists of:
+- A set of nodes
+- A set of edges that connects the nodes
+
+A simple graph is a graph with:
+- No edges that connect a vertex to itself
+- No two edges that connect the same vertices
+
+is there a path between two vertex?
+- Does `s==t`? if so, return true
+- Otherwise, if `connected(v,t)` for any neighbor v of s, return true
+- return false
+? will cause infinate loop
+
+fix: add state for every node
+- mark s.
+- Does `s==t`? if so, return true
+- Otherwise, if `connected(v,t)` for any unmarked neighbor v of s, return true
+- return false
+also called **depth first traversal**
+
+# Lecture 23
+*graph implementation*
+```
+public class Graph {
+	public Graph(int V);
+	public void addEdge(int v, int w);
+	Iterable<Integer> adj(int v);
+	int V();
+	int E();
+	...
+}
+```
+
+```
+public class Paths {
+	public Paths(Graph G, int s);
+	boolean hasPathTo(int v);
+	Iterable<Integer> pathTo(int v);
+}
+```
+
+```
+public class DepthFirstPaths {
+	private boolean[] marked;
+	private int[] edgeTo;
+	private int s;
+	...
+}
+```
+Graph representation
+(1) Adjacency Matrix
+![[Pasted image 20241017231923.png]]
+
+(2) store Collection of edges
+$\{(0,1), (0,2), (1,2)\}$
+
+(3) Adjacency Lists
+operation time cost
+```
+for (int v = 0; v < G.V(); v++) {
+	for (int w: G.adj(v)) {
+		System.out.printLn(v + "-" + w);
+	}
+}
+```
+Runtime to iterate over `v`'s neighbors: $\Omega(1), O(V)$
+therefore the `print` method takes best case: $\Theta(V)$, worst case: $\Theta(V^{2})$
+acturally the `print` method takes $\Theta(V+E)$ runtime
+because:
+- `v++` happens V times
+- Print happens 2E times
+
+# Lecture 24
+BFS vs. DFS
+- **Correctness:** both yes
+- **Output Quality**
+	- BFS guaranteed the shortest path (fewest node)
+- **Time efficiency**
+	- very similar
+- **Space efficiency**
+	- DFS is worse for spindly graphs
+		- call stack gets very deep
+	- BFS is worse for brushy graphs
+
+Dijkestra Algorithm
+for each child:
+- if not in SPT, add edge
+- if in, check if the path is better. if so, add edge and remove the previous edge (relax the edge)
+
+# Lecture 25
+*minimum spanning trees*
+$A^{*}$
+find the path from **Denver** to **NY**
+- using Dijkestra algrorism, we will search everywhere 2000 km from Denver
+- using $A^{*}$, we can have preference
+storing vertices in order of $d(source, v)+h(v,goal)$
+
+**minimum spanning tree**
+Given a undiracted graph, a **spanning tree** T is a subgraph of G, where T:
+- Is connected
+- is acyclic
+- Includes all of the vertices
+
+Cut property:
+![[Pasted image 20241021220953.png|]]
+**minimum-weight crossing edge must be in the MST!**
+then we build BST as below:
+- choose a random node
+- get the minumum edge
+- assign the nodes connected as a team, the rest the other
+- then repeat the operation until all the node are connected
+
+# Lecture 26
+*MSTs & Tries*
+Prims's demo:
+- choose a random node
+- get the minumum edge
+- assign the nodes connected as a team, the rest the other
+- then repeat the operation until all the node are connected
+*slow*
+
+real Prims:
+use dijketra, **but!** only cares the edge distance, (because the connected node are considered one node, which is MST)
+
+Kruskal's demo:
+- sort every edge and then add then to MST as long as this edge wont create a cycle
+- remember to stop when the amount of edges reaches $n-1$
+improvement:
+- when adding edge, use QuickUnion to put the two node to the same team
+- then when checking whether a edge will create cycle, check whether the nodes connected by the edge is in the same team
+- when sort edges, create a PQ to deal with it
+both of the algrorithm are based on ***cut porperty***
+Prims: create MST by the order of nodes
+Kruskals: create small MSTs and then union them
+
+**Tries**
+- each node contains a single letter of the string
+- nodes can be shared by mutiple keys
+
+# Lecture 27
+*soft engineering*
+working on small project isn't the same as working on large scale
+**Complexity**
+
+# Lecture 28
+implemente Trie:
+- using array map
+- using hash map
+- using BST
+Use Tire, it's easy to implemente "prefix" matching operation
+using prefix operation, we can implement auto completation
+and we can attach extra information to "***key***" node (the end of a string), which implemented "string - value" map
+**Directed Acyclic Graphs**
+
+# Lecture 29
+**reduction**
+we reduces "DAG-LPT" to "DAG-SPT" by simply add some preprocess and postprocess
+
+Sort algorithoms
+An **inversion** is a pair of elements that are out of order with respect to **<**
+![[Pasted image 20241028110431.png]]
+**Selection sort**
+- scan the whole array, and find the smallest item
+- put the item to the very front of the array
+![[Pasted image 20241028110855.png]]
+$\Theta(N^{2})$
+
+**Heap sort**
+- insert all the item into the heap
+- remove the root item and collect it
+- then reconstruct the heap
+![[Pasted image 20241028111314.png]]
+$O(N\log(N))$
+extra space: $O(N)$
+
+**In-place Heapsort**
+- heapification (heapify) $O(N\log(N))$
+	- sink from back
+- remove the top element, then heapify
+$O(N\log(N))$
+
+**Merge sort**
+- firstly, we can merge two sorted array by:
+	- using to pointers, each pointing at the start of the arrays
+	- compare to get the smallest
+		- put smallest into the result array
+		- corresponding pointer++
+	- continue doing so
+- merge arrays seems a recursive process
+- `sort(leftArray)`, `sort(rightArray)` and then merge them
+- if we split all the way down to the size one, then all the time cost would be:
+	- $O(N\log(N))$ !!!
+![[Pasted image 20241028143558.png]]
+the main cost is the `merge` operation
+
+# Lecture 30
+**Insertion sort**
+- pick item one by one, and put them to the right palce
+
+**In-place Insertion sort**
+- pick an item, and travel ahead until meet smaller item.
+- then choose the next item
+- **BUBBLE SORT!**
+$\Omega(N)$, $O(N^{2})$
+
+**Quick sort**
+- choose a pivot
+- everything less than or equal to the pivot would be put to left, and others right
+Best case: $\Theta(N\log(N))$
+Worst case: $\Theta(N^{2})$
+
+# Lecture 31
+*software engineering*
+
+# Lecture 32
+*more sorting!*
+if the piviot always end up at least 10% from either edge
+then for the least lucky subarray: $N(\frac{9}{10})^{n} = 1$
+$n = \log_{\frac{10}{9}}N = C\log N$
+then total time cost would also be $\Theta(N\log N)$, the only difference is that the time scaled by constant figure.
+Quick sort is BST sort!
+
+Dealing with bad ordering
+- Pick privots randomly
+- Shuffle before sort
+
+quick sort implementation
+- in-place partitioning
+	- two pointers one pointing at the beginning, the other pointing at the end of the array
+	- firstly, move `L` pointer until it meet the item larger than the piviot
+	- then move `G`, until it meet the item smaller than the pivot
+	- then, swap `L` and `G`'s items
+	- when they crossed, done.
+
+Quick select
+- first partition on a piviot, if the piviot is larger than the exact midium, re-partition the right part, else, re-partition the left part
+- then recursive doing so
+- finally, we found the exact midium
+time cost: $N + \frac{N}{C} + \frac{N}{C^{2}} + ... = N*(\frac{1-(\frac{1}{C})^{\log_{C}N}}{1-\frac{1}{C}}) = N*\frac{1-\frac{1}{N}}{1-\frac{1}{C}} =\frac{C(N-1)}{C-1} = k(N-1) = \Theta(N)$
+same as what we do when implementing array list
+![[#^778dec]]
+
+# lecture 34
+*Theoretical bounds on sorting*
+why's most sorting method ends up to $\Theta(N\log N)$? 
+can we do  better? or can we proof that this is the best we can do?
+
+Comparison sorts, which sort a list item using only two operations:
+- swap
+- compareTo
+
+consider $N!$ and $(\frac{N}{2})^{\frac{N}{2}}$
+is $N! \in \Omega((\frac{N}{2})^{\frac{N}{2}})$
+yes!
+
+then $\log(N!)\in \Omega(\frac{N}{2}\log(\frac{N}{2}))$
+$\log(N!)\in \Omega(N(\log N-\log 2))$
+$\log(N!)\in \Omega(N\log N)$
+
+$N\log N\in \Omega(\log(N!))$?
+$\log(N!) = \log (N) + \log (N-1) + ... + \log 1$
+$\le \log(N) + \log(N) + ... + \log(N)$
+$\in\Omega(N\log N)$
+
+then, $N\log N = \Theta(\log(N!)$
+
+! if we want to order a list, that means we have $N!$ universies, to sort them, the minimum height of our desition tree is $\log(N!)$, which is $\Theta(N\log N)$!
+
+# Lecture 35
+
+**digit by digit sort**
+
+**counting sort**
+- $O(N+R)$
+- that means which slows us is the total amount of elements in the array and the range of keys. 
+
+combine them, and we get:
+digit by digit counting sort, which is also called: **Radix sort.**
+
+# Lecture 36
+*Radix sort*
+**Least Significant Sort**: digit by digit sort form the last digit to the first digit
+**Most Significant Sort**: digit by digit, but after each digit, split the array and then sort the sub arrays
+
